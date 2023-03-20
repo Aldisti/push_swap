@@ -3,99 +3,152 @@
 #                                                         :::      ::::::::    #
 #    tester.py                                          :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: adi-stef <marvin@42.fr>                    +#+  +:+       +#+         #
+#    By: lde-mich <lde-mich@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/10 15:55:16 by adi-stef          #+#    #+#              #
-#    Updated: 2023/02/14 13:05:03 by adi-stef         ###   ########.fr        #
+#    Updated: 2023/03/17 18:01:07 by lde-mich         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
-from random import sample
 import subprocess as sub
+from random import sample
+from time import time
 
 MAX = 2147483647
 MIN = -2147483648
 P = "./push_swap"
-C = "./checker_MAC"
+C = "./checker_linux"
 tests = 0
 error = 0
 ok = 0
-ko = 0
 lko = []
+comb = []
 
 # test 2
-if (sub.getoutput(f'{P} "{MAX} {MIN} | {C} {MAX} {MIN}') == "KO"): ko += 1
-if (sub.getoutput(f'{P} {MIN} {MAX} | {C} {MIN} {MAX}') == "KO"): ko += 1
+if (sub.getoutput(f'{P} "{MAX} {MIN} | {C} {MAX} {MIN}') == "KO"): lko.append(f'{MAX} {MIN}')
+if (sub.getoutput(f'{P} {MIN} {MAX} | {C} {MIN} {MAX}') == "KO"): lko.append(f'{MIN} {MAX}')
 tests += 2
 
 # test 3
-for a in range(3):
-    for b in range(3):
-        for c in range(3):
-            cmd = str(f"{P} {a} {b} {c} | {C} {a} {b} {c}")
-            tests += 1
-            out = sub.getoutput(cmd)
-            if (out == "KO"): ko += 1; lko.append(str(a) + str(b) + str(c))
-            elif (out == "Error"): error += 1
-            elif (out == "OK"): ok += 1
+for a in range(100):
+    if (len(comb) == 6): break
+    abc = ' '.join([str(i) for i in sample(range(MIN, MAX), 3)])
+    if (abc in comb): continue
+    comb.append(abc)
+    out = sub.getoutput(f'{P} {abc} | {C} {abc}')
+    if (out == "KO"): lko.append(abc)
+    elif (out == "Error"): error += 1
+    elif (out == "OK"): ok += 1
+    else: print(out, abc, sep="\n"); exit(1)
+
+tests += len(comb)
+comb = []
 
 # test 5
-for _ in range(100):
-    tests += 1
+for _ in range(1000):
+    if (len(comb) == 120): break
     abc = ' '.join([str(i) for i in sample(range(MIN, MAX), 5)])
+    if (abc in comb): continue
+    comb.append(abc)
     out = sub.getoutput(f'{P} {abc} | {C} {abc}')
-    if (out == "KO"): ko += 1; lko.append(abc)
+    if (out == "KO"): lko.append(abc)
     elif (out == "Error"): error += 1
     elif (out == "OK"): ok += 1
+
+tests += len(comb)
+comb = []
 
 # test 100
-for _ in range(100):
-    tests += 1
+for _ in range(1000):
+    if (len(comb) == 100): break
     abc = ' '.join([str(i) for i in sample(range(MIN, MAX), 100)])
+    if (abc in comb): continue
+    comb.append(abc)
     out = sub.getoutput(f"{P} {abc} | {C} {abc}")
-    if (out == "KO"): ko += 1; lko.append(abc)
+    if (out == "KO"): lko.append(abc)
     elif (out == "Error"): error += 1
     elif (out == "OK"): ok += 1
+
+tests += len(comb)
+comb = []
 
 # test 500
-for _ in range(100):
+for _ in range(1000):
+    if (len(comb) == 100): break
     abc = " ".join([str(i) for i in sample(range(MIN, MAX), 500)])
+    if (abc in comb): continue
+    comb.append(abc)
     out = sub.getoutput(f'{P} {abc} | {C} {abc}')
-    if (out == "KO"): ko += 1; lko.append(abc)
+    if (out == "KO"): lko.append(abc)
     elif (out == "Error"): error += 1
     elif (out == "OK"): ok += 1
+
+tests += len(comb)
+comb = []
 
 # test from 0 to 500
-for i in range(0, 500):
+for i in range(2, 501):
     abc = " ".join([str(i) for i in sample(range(MIN, MAX), i)])
     out = sub.getoutput(f'{P} {abc} | {C} {abc}')
-    if (out == "KO"): ko += 1; lko.append(abc)
+    if (out == "KO"): lko.append(abc)
     elif (out == "Error"): error += 1
     elif (out == "OK"): ok += 1
 
+tests += len(comb)
+
+if (len(lko)):
+    for i in lko: print(i)
+print(f"Tests: {tests}")
 print(f"OK: {ok}")
-print(f"KO: {ko}")
-print(lko)
+print(f"KO: {len(lko)}")
 print(f"Error: {error}")
-print(f"Correct: {(tests - error)/(tests - error)*100}%")
+print(f"Correct: {(tests - error - len(lko))/(tests - error)*100}%")
 
 # test n moves with 100 numbers
+start = time()
 moves = []
-for _ in range(100):
+comb = []
+while (42):
+    if (len(comb) == 10000): break
     abc = " ".join([str(i) for i in sample(range(MIN, MAX), 100)])
-    out = sub.getoutput(f'./push_swap {abc} | wc -l | grep -o "[0-9]\+"')
-    moves.append(int(out))
+    if (abc in comb): continue
+    comb.append(abc)
+    out = sub.getoutput(f'{P} {abc} | wc -l | grep -o "[0-9]\+"')
+    if (int(out) < 200): print(abc, out, sep="\n"); exit(1)
+    try:
+        moves.append(int(out))
+    except:
+        print(abc, out, sep="\n"); exit(1)
 
-#print(moves)
-print(f"Tests: {len(moves)}")
-print(f"Max moves for 100 numbers: {max(moves)}")
-print(f"Avg moves for 100 numbers: {round(sum(moves) / len(moves), 2)}")
+with open("nmoves1", "a") as f:
+    f.write("\n".join([str(i) for i in moves]))
+end = time()
+print(f"Number of tests with {len(comb[0].split())} pseudorandom numbers: {len(moves)}")
+print(f"Max moves for {len(comb[0].split())} numbers: {max(moves)}")
+print(f"Min moves for {len(comb[0].split())} numbers: {min(moves)}")
+print(f"Avg moves for {len(comb[0].split())} numbers: {round(sum(moves) / len(moves), 2)}")
+print(f"Time: {end - start}s")
 
+start = time()
 moves = []
-for _ in range(100):
+comb = []
+while (42):
+    if (len(comb) == 1000): break
     abc = " ".join([str(i) for i in sample(range(MIN, MAX), 500)])
-    out = sub.getoutput(f'./push_swap {abc} | wc -l | grep -o "[0-9]\+"')
-    moves.append(int(out))
+    if (abc in comb): continue
+    comb.append(abc)
+    if (sub.getoutput(f'{P} {abc} | {C} {abc}') != "OK"): print(abc); exit(1)
+    out = sub.getoutput(f'{P} {abc} | wc -l | grep -o "[0-9]\+"')
+    if (int(out) < 1000): print(abc, out, sep="\n"); exit(1)
+    try:
+        moves.append(int(out))
+    except:
+        print(abc, out, sep="\n"); exit(1)
 
-print(f"Tests: {len(moves)}")
-print(f"Max moves for 500 numbers: {max(moves)}")
-print(f"Avg moves for 500 numbers: {round(sum(moves) / len(moves), 2)}")
+with open("nmoves5", "a") as f:
+    f.write("\n".join([str(i) for i in moves]))
+end = time()
+print(f"Number of tests with {len(comb[0].split())} numbers in input: {len(comb)}")
+print(f"Max moves for {len(comb[0].split())} numbers in input: {max(moves)}")
+print(f"Min moves for {len(comb[0].split())} numbers in input: {min(moves)}")
+print(f"Avg moves for {len(comb[0].split())} numbers in input: {round(sum(moves) / len(moves), 2)}")
+print(f"Time: {end - start}s\n")
