@@ -6,7 +6,7 @@
 #    By: adi-stef <adi-stef@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/10 15:55:16 by adi-stef          #+#    #+#              #
-#    Updated: 2023/04/09 22:33:59 by adi-stef         ###   ########.fr        #
+#    Updated: 2023/04/09 22:40:35 by adi-stef         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -97,11 +97,11 @@ if (__name__ == '__main__'):
     if (not access(P, X_OK)): print(f"{b}Error{e}\n{r}[{P[2:]}] executable must be present in this dir and must have permissions{e}"); exit(1)
     if (not access(C, X_OK)): print(f"{b}Error{e}\n{r}[{C[2:]}] executable must be present in this dir and must have permissions{e}"); exit(1)
     if (len(argv) == 1):
-        print(f"""by {p}Aldisti{e}\nThis is a simple python tester for {b}push_swap{e} a project of the 42Cursus
+        print(f"""by {p}Aldisti{e} with love and something else\nThis is a simple python tester for {b}push_swap{e} a project of the 42Cursus
 You can run this script in 2 different ways:
-{b}python3 tester.py m{e} -> this will test your algo with 3, 5, 100 and 500 numbers
-{b}python3 tester.py b{e} -> this will do some tests with your checker
-{b}python3 tester.py a{e} -> this will do both m and b
+{b}python3 tester.py{e} {g}m{e} -> this will test your algo with 3, 5, 100 and 500 numbers
+{b}python3 tester.py{e} {g}b{e} -> this will do some tests with your checker
+{b}python3 tester.py{e} {g}a{e} -> this will do both m and b
 {b}python3 tester.py{e} {g}[number_of_tests] [length_of_stack]{e}"""); exit(0)
     elif (len(argv) == 2):
         if (argv[1] == 'm'):
